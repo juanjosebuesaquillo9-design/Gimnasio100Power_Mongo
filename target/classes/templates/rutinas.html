@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Rutinas Digitales')}"></head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{fragments :: menu('rutinas')}"></div>
+        <div class="col-md-10 p-4">
+            <h3 class="fw-bold mb-3">Asignación de Rutinas Personalizadas (RF005)</h3>
+            <div th:if="${exito}" class="alert alert-success" th:text="${exito}"></div>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card card-kpi p-3">
+                        <h5 class="fw-bold mb-3">Nueva Rutina Digital</h5>
+                        <form th:action="@{/rutinas/guardar}" method="post">
+                            <div class="mb-2">
+                                <label class="form-label">Cliente</label>
+                                <select name="idCliente" class="form-select" required>
+                                    <option th:each="c : ${clientes}" th:value="${c.idCliente}" th:text="${c.cedula + ' - ' + c.nombreCompleto}"></option>
+                                </select>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label">Entrenador Asignado</label>
+                                <select name="idEntrenador" class="form-select" required>
+                                    <option th:each="e : ${entrenadores}" th:value="${e.idEntrenador}" th:text="${e.nombre + ' (' + e.especialidad + ')'}"></option>
+                                </select>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 mb-2">
+                                    <label class="form-label">Nivel</label>
+                                    <select name="nivel" class="form-select">
+                                        <option value="PRINCIPIANTE">PRINCIPIANTE</option>
+                                        <option value="INTERMEDIO">INTERMEDIO</option>
+                                        <option value="AVANZADO">AVANZADO</option>
+                                    </select>
+                                </div>
+                                <div class="col-6 mb-2">
+                                    <label class="form-label">Objetivo</label>
+                                    <select name="objetivo" class="form-select">
+                                        <option value="HIPERTROFIA">HIPERTROFIA</option>
+                                        <option value="PERDIDA_PESO">PÉRDIDA DE PESO</option>
+                                        <option value="FUERZA">FUERZA</option>
+                                        <option value="RESISTENCIA">RESISTENCIA</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Plan de Ejercicios (Series x Repeticiones)</label>
+                                <textarea name="ejercicios" rows="4" class="form-control" placeholder="Día 1: Press banca 4x10, Aperturas 3x12..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-danger w-100 fw-bold">Asignar Rutina</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="card card-kpi p-3">
+                        <h5 class="fw-bold mb-3">Rutinas Activas en el Sistema</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-sm">
+                                <thead class="table-dark"><tr><th>Cliente</th><th>Entrenador</th><th>Nivel / Objetivo</th><th>Detalle Ejercicios</th></tr></thead>
+                                <tbody>
+                                    <tr th:each="r : ${rutinas}">
+                                        <td class="fw-bold" th:text="${r.cliente.nombreCompleto}"></td>
+                                        <td th:text="${r.entrenador.nombre}"></td>
+                                        <td><span class="badge bg-primary" th:text="${r.nivel}"></span> <span class="badge bg-dark" th:text="${r.objetivo}"></span></td>
+                                        <td class="small" th:text="${r.ejercicios}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

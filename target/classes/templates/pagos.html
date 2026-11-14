@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Pagos y Caja')}"></head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{fragments :: menu('pagos')}"></div>
+        <div class="col-md-10 p-4">
+            <h3 class="fw-bold mb-3">Control de Pagos y Arqueo de Caja (RF002)</h3>
+            <div th:if="${exito}" class="alert alert-success" th:text="${exito}"></div>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card card-kpi p-3">
+                        <h5 class="fw-bold mb-3">Registrar Pago / Renovación</h5>
+                        <form th:action="@{/pagos/registrar}" method="post">
+                            <div class="mb-2">
+                                <label class="form-label">Afiliado</label>
+                                <select name="idCliente" class="form-select" required>
+                                    <option th:each="c : ${clientes}" th:value="${c.idCliente}" th:text="${c.cedula + ' - ' + c.nombreCompleto}"></option>
+                                </select>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label">Plan</label>
+                                <select name="planPagado" class="form-select" required>
+                                    <option value="MENSUAL">MENSUAL</option>
+                                    <option value="TRIMESTRAL">TRIMESTRAL</option>
+                                    <option value="SEMESTRAL">SEMESTRAL</option>
+                                    <option value="ANUAL">ANUAL</option>
+                                </select>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label">Monto ($ COP)</label>
+                                <input type="number" name="monto" value="70000" min="10000" step="1000" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Método de Pago</label>
+                                <select name="metodo" class="form-select" required>
+                                    <option value="EFECTIVO">EFECTIVO</option>
+                                    <option value="TRANSFERENCIA">TRANSFERENCIA (Nequi / Bancolombia)</option>
+                                    <option value="TARJETA">TARJETA</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100 fw-bold"><i class="bi bi-check-circle"></i> Registrar Pago</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="card card-kpi p-3">
+                        <h5 class="fw-bold mb-3">Historial Reciente de Transacciones</h5>
+                        <table class="table table-hover table-sm">
+                            <thead class="table-dark"><tr><th>ID</th><th>Cliente</th><th>Fecha</th><th>Plan</th><th>Método</th><th>Monto</th></tr></thead>
+                            <tbody>
+                                <tr th:each="p : ${pagos}">
+                                    <td th:text="${p.idPago}"></td>
+                                    <td th:text="${p.cliente.nombreCompleto}"></td>
+                                    <td th:text="${p.fechaPago}"></td>
+                                    <td th:text="${p.planPagado}"></td>
+                                    <td><span class="badge bg-info text-dark" th:text="${p.metodo}"></span></td>
+                                    <td class="fw-bold text-success" th:text="'$' + ${#numbers.formatDecimal(p.monto, 0, 'POINT', 0, 'COMMA')}"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

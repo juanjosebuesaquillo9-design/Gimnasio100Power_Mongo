@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Control de Asistencia')}"></head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{fragments :: menu('asistencias')}"></div>
+        <div class="col-md-10 p-4">
+            <h3 class="fw-bold mb-3">Control de Ingreso y Torniquete FIFO (RF003 - RF004)</h3>
+
+            <div class="row g-4">
+                <div class="col-md-5">
+                    <div class="card card-kpi p-4">
+                        <h5 class="fw-bold mb-2">Validar Documento de Ingreso</h5>
+                        <p class="text-muted small">Ingrese la cédula del afiliado (Ej: <code>1047480001</code> activo o <code>1047480105</code> vencido)</p>
+                        <form th:action="@{/asistencias/marcar}" method="post">
+                            <div class="input-group input-group-lg mb-3">
+                                <input type="text" name="cedula" class="form-control" placeholder="Número de cédula..." autofocus required>
+                                <button class="btn btn-danger fw-bold" type="submit">Validar</button>
+                            </div>
+                        </form>
+
+                        <div th:if="${error}" class="alert alert-warning fw-bold" th:text="${error}"></div>
+
+                        <div th:if="${accesoAutorizado}" class="alert alert-success border-3">
+                            <h4 class="alert-heading fw-bold"><i class="bi bi-check-circle-fill"></i> ACCESO AUTORIZADO</h4>
+                            <p class="mb-1"><strong>Cliente:</strong> <span th:text="${accesoAutorizado.cliente.nombreCompleto}"></span></p>
+                            <p class="mb-0"><strong>Vence el:</strong> <span th:text="${accesoAutorizado.cliente.fechaVencimiento}"></span></p>
+                        </div>
+
+                        <div th:if="${accesoDenegado}" class="alert alert-danger border-3">
+                            <h4 class="alert-heading fw-bold"><i class="bi bi-x-octagon-fill"></i> ACCESO DENEGADO - VENCIDA</h4>
+                            <p class="mb-1"><strong>Cliente:</strong> <span th:text="${accesoDenegado.cliente.nombreCompleto}"></span></p>
+                            <p class="mb-0"><strong>Venció el:</strong> <span th:text="${accesoDenegado.cliente.fechaVencimiento}"></span>. Debe renovar en caja.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-7">
+                    <div class="card card-kpi p-3">
+                        <h5 class="fw-bold mb-3">Bitácora de Asistencias Recientes</h5>
+                        <table class="table table-sm table-hover">
+                            <thead class="table-dark"><tr><th>Cédula</th><th>Afiliado</th><th>Fecha y Hora</th><th>Resultado</th></tr></thead>
+                            <tbody>
+                                <tr th:each="a : ${asistencias}">
+                                    <td th:text="${a.cliente.cedula}"></td>
+                                    <td th:text="${a.cliente.nombreCompleto}"></td>
+                                    <td th:text="${#temporals.format(a.fechaHora, 'dd/MM/yyyy HH:mm:ss')}"></td>
+                                    <td>
+                                        <span th:if="${a.estadoAcceso == 'AUTORIZADO'}" class="badge bg-success">AUTORIZADO</span>
+                                        <span th:unless="${a.estadoAcceso == 'AUTORIZADO'}" class="badge bg-danger">DENEGADO_VENCIDO</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

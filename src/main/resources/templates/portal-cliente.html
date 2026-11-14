@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Portal del Afiliado')}"></head>
+<body>
+<div class="container py-4" style="max-width: 720px;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold text-danger mb-0"><i class="bi bi-lightning-charge-fill"></i> 100% POWER - Mi Perfil</h4>
+        <a th:href="@{/logout}" class="btn btn-outline-dark btn-sm">Salir</a>
+    </div>
+
+    <form class="card card-kpi p-3 mb-3" method="get" th:action="@{/portal-cliente}">
+        <label class="form-label fw-bold">Consultar estado por Cédula (RF006)</label>
+        <div class="input-group">
+            <input type="text" name="cedulaConsulta" class="form-control" placeholder="Ej: 1047480001">
+            <button class="btn btn-danger" type="submit">Consultar</button>
+        </div>
+    </form>
+
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <div th:if="${cliente != null}">
+        <div class="card card-kpi p-3 mb-3">
+            <h5 class="fw-bold" th:text="${cliente.nombreCompleto}">Nombre</h5>
+            <p class="mb-1"><strong>Cédula:</strong> <span th:text="${cliente.cedula}"></span> | <strong>Plan:</strong> <span th:text="${cliente.tipoMembresia}"></span></p>
+            <p class="mb-0">
+                <strong>Estado:</strong>
+                <span th:if="${cliente.estadoMembresia == 'ACTIVA'}" class="badge bg-success">ACTIVA</span>
+                <span th:unless="${cliente.estadoMembresia == 'ACTIVA'}" class="badge bg-danger">VENCIDA</span>
+                (Vence: <span th:text="${cliente.fechaVencimiento}"></span>)
+            </p>
+        </div>
+
+        <div class="card card-kpi p-3 mb-3">
+            <h6 class="fw-bold text-primary"><i class="bi bi-activity"></i> Mi Rutina Asignada</h6>
+            <div th:if="${#lists.isEmpty(rutinasCliente)}" class="text-muted small">Aún no tienes rutina asignada.</div>
+            <div th:each="r : ${rutinasCliente}" class="border-bottom pb-2 mb-2">
+                <span class="badge bg-dark" th:text="${r.objetivo}"></span> <small class="text-muted" th:text="'Entrenador: ' + ${r.entrenador.nombre}"></small>
+                <p class="mb-0 mt-1 small" th:text="${r.ejercicios}"></p>
+            </div>
+        </div>
+
+        <div class="card card-kpi p-3">
+            <h6 class="fw-bold text-success"><i class="bi bi-receipt"></i> Mis Últimos Pagos</h6>
+            <table class="table table-sm mb-0">
+                <thead><tr><th>Fecha</th><th>Plan</th><th>Método</th><th>Monto</th></tr></thead>
+                <tbody>
+                    <tr th:each="p : ${pagosCliente}">
+                        <td th:text="${p.fechaPago}"></td>
+                        <td th:text="${p.planPagado}"></td>
+                        <td th:text="${p.metodo}"></td>
+                        <td class="fw-bold" th:text="'$' + ${#numbers.formatDecimal(p.monto, 0, 'POINT', 0, 'COMMA')}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

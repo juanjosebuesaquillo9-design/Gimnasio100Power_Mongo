@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Dashboard')}"></head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{fragments :: menu('dashboard')}"></div>
+        <div class="col-md-10 p-4">
+            <h3 class="fw-bold mb-1">Panel General - Gimnasio 100% Power</h3>
+            <p class="text-muted mb-4">Resumen operativo y financiero en tiempo real</p>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="card card-kpi p-3 border-start border-primary border-4">
+                        <small class="text-muted fw-bold">AFILIADOS ACTIVOS</small>
+                        <h2 class="fw-bold text-primary mb-0" th:text="${clientesActivos} + ' / ' + ${totalClientes}">0</h2>
+                        <small class="text-danger" th:text="${clientesVencidos} + ' con membresía vencida'"></small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card card-kpi p-3 border-start border-success border-4">
+                        <small class="text-muted fw-bold">INGRESOS RECAUDADOS</small>
+                        <h2 class="fw-bold text-success mb-0" th:text="'$' + ${#numbers.formatDecimal(totalIngresos, 0, 'POINT', 0, 'COMMA')}">$0</h2>
+                        <small class="text-muted" th:text="${totalPagosCount} + ' transacciones registradas'"></small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card card-kpi p-3 border-start border-warning border-4">
+                        <small class="text-muted fw-bold">ASISTENCIAS HOY</small>
+                        <h2 class="fw-bold text-dark mb-0" th:text="${asistenciasHoy}">0</h2>
+                        <small class="text-muted" th:text="${totalAsistenciasCount} + ' registros históricos'"></small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card card-kpi p-3 border-start border-danger border-4">
+                        <small class="text-muted fw-bold">BASE DE DATOS MONGODB</small>
+                        <h2 class="fw-bold text-danger mb-0" th:text="${totalClientes + totalPagosCount + totalAsistenciasCount}">1000</h2>
+                        <small class="text-muted">Registros totales poblados</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card card-kpi p-3">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-cash-stack text-success"></i> Últimos Pagos Registrados</h5>
+                        <table class="table table-sm table-hover">
+                            <thead><tr><th>Cliente</th><th>Plan</th><th>Método</th><th>Monto</th></tr></thead>
+                            <tbody>
+                                <tr th:each="p : ${ultimosPagos}">
+                                    <td th:text="${p.cliente.nombreCompleto}"></td>
+                                    <td th:text="${p.planPagado}"></td>
+                                    <td><span class="badge bg-secondary" th:text="${p.metodo}"></span></td>
+                                    <td class="fw-bold text-success" th:text="'$' + ${#numbers.formatDecimal(p.monto, 0, 'POINT', 0, 'COMMA')}"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card card-kpi p-3">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-door-open text-primary"></i> Últimos Accesos en Torniquete</h5>
+                        <table class="table table-sm table-hover">
+                            <thead><tr><th>Cliente</th><th>Fecha y Hora</th><th>Estado</th></tr></thead>
+                            <tbody>
+                                <tr th:each="a : ${ultimasAsistencias}">
+                                    <td th:text="${a.cliente.nombreCompleto}"></td>
+                                    <td th:text="${#temporals.format(a.fechaHora, 'dd/MM/yyyy HH:mm')}"></td>
+                                    <td>
+                                        <span th:if="${a.estadoAcceso == 'AUTORIZADO'}" class="badge bg-success">AUTORIZADO</span>
+                                        <span th:unless="${a.estadoAcceso == 'AUTORIZADO'}" class="badge bg-danger">VENCIDO</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
